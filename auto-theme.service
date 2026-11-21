@@ -1,0 +1,10 @@
+[Unit]
+Description=Switch light/dark theme by sunrise/sunset
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/auto-theme.py
+
+[Install]
+WantedBy=graphical-session.target
