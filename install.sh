@@ -4,7 +4,7 @@ set -euo pipefail
 
 VERSION="1.0.0"
 RAW_BASE="${AUTO_THEME_RAW_BASE:-https://raw.githubusercontent.com/edouard-lopez/linux-auto-dark-light-desktop-theme/main}"
-FILES=(auto-theme.py auto-theme.service auto-theme.timer auto-theme.conf)
+FILES=(auto-theme.py auto-theme.service auto-theme.timer auto-theme.example.conf)
 
 for cmd in curl python3 systemctl; do
   command -v "$cmd" >/dev/null 2>&1 || { echo "Error: $cmd is required." >&2; exit 1; }
@@ -12,26 +12,27 @@ done
 
 echo "auto-theme installer v$VERSION"
 
-src=""
+source_dir=""
 if [[ -n "${BASH_SOURCE[0]:-}" && -f "${BASH_SOURCE[0]}" ]]; then
-  dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  [[ -f "$dir/auto-theme.py" ]] && src="$dir"
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  [[ -f "$script_dir/auto-theme.py" ]] && source_dir="$script_dir"
 fi
 
-if [[ -z "$src" ]]; then
-  src="$(mktemp -d)"
-  trap 'rm -rf "$src"' EXIT
+if [[ -z "$source_dir" ]]; then
+  source_dir="$(mktemp -d)"
+  trap 'rm -rf "$source_dir"' EXIT
   echo "Downloading files from $RAW_BASE"
-  for f in "${FILES[@]}"; do
-    curl -fsSL "$RAW_BASE/$f" -o "$src/$f"
+  for file in "${FILES[@]}"; do
+    curl -fsSL "$RAW_BASE/$file" -o "$source_dir/$file"
   done
 fi
 
-cd "$src"
-install -Dm755 auto-theme.py ~/.local/bin/auto-theme.py
-install -Dm644 auto-theme.service ~/.config/systemd/user/auto-theme.service
-install -Dm644 auto-theme.timer ~/.config/systemd/user/auto-theme.timer
-[[ -f ~/.config/auto-theme.conf ]] || install -Dm644 auto-theme.conf ~/.config/auto-theme.conf
+install -Dm755 "$source_dir/auto-theme.py" ~/.local/bin/auto-theme.py
+install -Dm644 "$source_dir/auto-theme.service" ~/.config/systemd/user/auto-theme.service
+install -Dm644 "$source_dir/auto-theme.timer" ~/.config/systemd/user/auto-theme.timer
+if [[ ! -f ~/.config/auto-theme.conf ]]; then
+  install -Dm644 "$source_dir/auto-theme.example.conf" ~/.config/auto-theme.conf
+fi
 systemctl --user daemon-reload
 systemctl --user enable --now auto-theme.timer
 systemctl --user enable auto-theme.service
