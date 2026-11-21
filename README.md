@@ -5,8 +5,11 @@
    curl -fsSL https://raw.githubusercontent.com/edouard-lopez/linux-auto-dark-light-desktop-theme/main/install.sh | bash
    ```
    Or from a clone: `./install.sh`.
-3. Edit `~/.config/auto-theme.conf`: set latitude/longitude and theme names.
+2. Edit `~/.config/auto-theme.conf`: set latitude/longitude and theme names.
    List themes: `ls /usr/share/themes ~/.themes`.
+   See [auto-theme.example.conf](auto-theme.example.conf) for all options.
+   The installer creates the config from this example only if it does not
+   already exist.
 
 Commands:
 - `auto-theme.py status` shows today's sunrise/sunset.
@@ -18,13 +21,18 @@ Uninstall (config is kept):
 curl -fsSL https://raw.githubusercontent.com/edouard-lopez/linux-auto-dark-light-desktop-theme/main/uninstall.sh | bash
 ```
 
-Tests: `python3 -m unittest discover tests`
+Tests:
+```bash
+python3 -m unittest discover tests
+bats tests/install.bats
+```
+
+The shell tests require Bats, Python 3, and `systemd-analyze`. They use a
+temporary home and mock `systemctl`, `curl`, and `gsettings`; they validate
+the unit files and run the installed service command, but do not start a real
+systemd user session or change desktop settings.
 
 
 ## Changelog
 
-### 1.0.0
-- Initial release: switch Cinnamon dark/light theme at sunrise/sunset.
-- systemd user timer and service.
-- Unit tests.
-- curl one-liner installer and uninstaller.
+See [CHANGELOG.md](CHANGELOG.md).
