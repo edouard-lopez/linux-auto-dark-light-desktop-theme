@@ -35,13 +35,4 @@ systemd user session or change desktop settings.
 
 ## Changelog
 
-### Unreleased
-- Refactor the theme switcher, installer, and Python tests for readability.
-- Document configuration options in an example file; preserve existing configs on install.
-- Add isolated Bats tests for installation and service and timer units.
-
-### 1.0.0
-- Initial release: switch Cinnamon dark/light theme at sunrise/sunset.
-- systemd user timer and service.
-- Unit tests.
-- curl one-liner installer and uninstaller.
+See [CHANGELOG.md](CHANGELOG.md).
